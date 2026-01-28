@@ -1,59 +1,222 @@
-# bilibili-AIHardcore
-基于原仓库进行修改
+# B站硬核会员答题助手 - 命令行版本
 
-B 站硬核会员自动答题工具，利用 LLM 实现智能答题功能。
-**可用的模型：**
-- OpenAI API兼容（火山引擎、硅基流动等）
+基于AI的B站硬核会员自动答题工具，使用DeepSeek API进行智能答题。
 
-![Image](https://github.com/user-attachments/assets/ad523686-ec27-4566-8b43-7dac6efa0579)
+## 特点
 
-![Image](https://github.com/user-attachments/assets/0a93b6bb-4266-4317-a7a3-ef56333949d0)
+- ✅ 纯命令行界面，无需GUI
+- ✅ AI自动分析题目并答题
+- ✅ 支持登录信息管理和账号切换
+- ✅ 详细的日志输出
+- ✅ 完整的测试工具
 
+## 快速开始
 
-⚠️请避免使用思考模型，防止超时报错，普通模型已足够完成答题流程并保证正确率。
-## 使用说明
-
-1. 克隆项目到本地
-
-```bash
-git clone https://github.com/NekoMirra/bilibili-AIHardcore
-cd bilibili-AIHardcore
-```
-
-2. 安装依赖
+### 1. 安装依赖
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-cli.txt
 ```
-3. 运行主程序
+
+### 2. 配置API密钥
+
+编辑 `cli_main.py` 文件，设置你的DeepSeek API密钥：
+
+```python
+DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # 替换为你的API Key
+```
+
+获取API密钥：https://platform.deepseek.com/api_keys
+
+### 3. 测试配置（推荐）
 
 ```bash
-python gui_main.py
+python test_api.py
 ```
+
+### 4. 运行程序
+
+```bash
+python cli_main.py
+```
+
+## 主要功能
+
+### 自动答题
+- 扫码登录B站账号
+- 选择答题分类
+- AI自动分析并提交答案
+- 实时显示答题过程
+
+### 登录管理
+- 自动保存登录信息（7天有效）
+- 查看登录状态：`python check_login.py`
+- 清除登录信息：`python clear_login.py`
+- 支持快速切换账号
+
+### 测试工具
+- API配置测试：`python test_api.py`
+- AI功能测试：`python test_ai_answer.py`
+- API调用监控：`python monitor_api.py`
+
 ## 使用流程
-1. 选择回答模型
-2. 输入自己的 API Key
-3. 扫描二维码登录
-4. 输入要进行答题的分类
-5. 查看并输入图形验证码
-6. 程序会自动开始答题流程
+
+### 首次使用
+```bash
+python cli_main.py
+# 1. 扫码登录
+# 2. 输入分类ID和验证码
+# 3. 开始自动答题
+```
+
+### 继续使用
+```bash
+python cli_main.py
+# 检测到已保存的登录信息
+# 选择 y 使用已保存的登录信息
+# 直接开始答题
+```
+
+### 切换账号
+```bash
+python cli_main.py
+# 选择 n 清除旧登录信息
+# 扫码登录新账号
+# 开始答题
+```
+
+或使用清除工具：
+```bash
+python clear_login.py  # 清除旧登录信息
+python cli_main.py     # 登录新账号
+```
+
+## 工具说明
+
+| 工具 | 命令 | 功能 |
+|------|------|------|
+| 主程序 | `python cli_main.py` | 自动答题 |
+| API测试 | `python test_api.py` | 测试API配置 |
+| AI测试 | `python test_ai_answer.py` | 测试AI功能 |
+| API监控 | `python monitor_api.py` | 监控API调用 |
+| 查看登录 | `python check_login.py` | 查看登录状态 |
+| 清除登录 | `python clear_login.py` | 清除登录信息 |
+| 快速启动 | `./start_cli.sh` | 一键启动（macOS/Linux） |
+
+## 配置说明
+
+### API配置
+在 `cli_main.py` 中配置：
+
+```python
+# DeepSeek API配置
+DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+DEEPSEEK_MODEL = "deepseek-chat"
+```
+
+### 支持其他API服务
+
+**火山引擎：**
+```python
+DEEPSEEK_API_KEY = "your-volcengine-api-key"
+DEEPSEEK_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
+DEEPSEEK_MODEL = "your-model-endpoint-id"
+```
+
+**硅基流动：**
+```python
+DEEPSEEK_API_KEY = "your-siliconflow-api-key"
+DEEPSEEK_BASE_URL = "https://api.siliconflow.cn/v1"
+DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-V2.5"
+```
 
 ## 常见问题
-1. 二维码乱码：请尝试在 Windows Terminal 中使用命令运行 exe，或手动生成二维码进行扫码
-2. 答题不及格：尝试使用历史分区答题，历史分区的准确率较高
-3. AI 卡在一个问题一直过不去，回复类似于“无法确认、我不清楚”：去 B 站 APP 手动把卡住的题目过了，切记不要在 B 站答题页面点击左上角返回按钮退出，会结束答题
 
-## Gemini 模型使用问题及解决办法
-1. 答题触发 429 错误：应该是触发了 Gemini 每分钟调用限制或触发了风控，依次尝试以下操作：
-    1. 可以稍等一下重新运行，会接着中断的题目继续回答
-    2. 如果还不行，尝试切换节点（修改IP）
-    3. 再不行就需要手动修改一下代码里的 prompt
-    4. 终极解决办法：别用 Gemini 模型了，用 DeepSeek 模型
-2. 开始答题直接之后软件直接退出：需要切换到大陆及香港以外的节点进行答题
+### Q: 如何切换账号？
+A: 运行 `python clear_login.py` 或在主程序中选择 n
+
+### Q: 如何验证AI是否在工作？
+A: 运行 `python test_ai_answer.py` 或 `python monitor_api.py`
+
+### Q: 登录信息保存在哪里？
+A: `~/.bili-hardcore/auth.json`（有效期7天）
+
+### Q: 二维码显示异常怎么办？
+A: 程序会提供链接，访问 https://cli.im/ 手动生成二维码
+
+### Q: API调用失败怎么办？
+A:
+1. 检查API密钥是否正确
+2. 运行 `python test_api.py` 测试
+3. 检查网络连接
+
+### Q: 如何查看登录状态？
+A: 运行 `python check_login.py`
 
 ## 注意事项
-- 使用前请确保已配置正确的 API Key
-- 程序仅调用 B 站接口和 LLM API，不会上传任何个人信息
-- 首次输入 API Key 和登录后，会将信息保存到 `~/.bilibili-AIHardcore`，下次运行时会自动读取。如遇到奇怪问题，请先清空此文件夹重新运行软件
-- 如果使用Gemini，注意需要切换至 Gemini 允许的地区运行，否则会被 Gemini API 拦截
-- 请合理使用，遵守 B 站相关规则
+
+1. **API密钥安全**
+   - 不要将包含真实API密钥的代码提交到公共仓库
+   - 已添加到 `.gitignore`
+
+2. **登录信息**
+   - 登录信息保存在 `~/.bili-hardcore/auth.json`
+   - 有效期7天，过期需重新登录
+   - 如遇问题可删除该文件重新登录
+
+3. **答题建议**
+   - 推荐选择历史分区，准确率较高
+   - 避免使用思考模型，防止超时
+   - 如AI卡住，可去B站APP手动答题
+
+4. **费用说明**
+   - DeepSeek API费用：输入 ¥1/百万tokens，输出 ¥2/百万tokens
+   - 每道题约 ¥0.0005（约0.05分）
+   - 答100道题约 ¥0.05（5分钱）
+
+## 文件结构
+
+```
+bilibili-AIHardcore/
+├── cli_main.py              # 主程序（需配置API密钥）
+├── test_api.py              # API配置测试
+├── test_ai_answer.py        # AI答题测试
+├── monitor_api.py           # API调用监控
+├── check_login.py           # 查看登录状态
+├── clear_login.py           # 清除登录信息
+├── start_cli.sh             # 快速启动脚本
+├── requirements-cli.txt     # 依赖列表
+├── README.md                # 本文件
+├── QUICKSTART.md            # 快速开始指南
+├── 更新日志.md              # 更新日志
+└── bilibili-AIHardcore/     # 核心功能模块
+    ├── client/              # B站API客户端
+    ├── config/              # 配置管理
+    ├── scripts/             # 登录和答题脚本
+    └── tools/               # 工具模块（LLM、日志等）
+```
+
+## 技术栈
+
+- **Python 3.8+**
+- **DeepSeek API** - AI模型
+- **requests** - HTTP请求
+- **qrcode** - 二维码生成
+
+## 更新日志
+
+查看 [更新日志.md](更新日志.md) 了解详细的更新内容。
+
+## 许可证
+
+本项目基于原仓库修改，仅供学习交流使用。
+
+## 致谢
+
+- 原项目：bilibili-AIHardcore
+- AI模型：DeepSeek
+
+---
+
+**立即开始**: `python cli_main.py` 🚀

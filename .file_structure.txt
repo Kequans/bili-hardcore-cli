@@ -1,0 +1,33 @@
+# 文件结构说明
+
+## 根目录文件
+
+### 文档文件（3个）
+- README.md           # 主要使用文档
+- QUICKSTART.md       # 快速开始指南
+- 更新日志.md         # 更新日志
+
+### 程序文件（7个）
+- cli_main.py         # 主程序（需配置API密钥）
+- test_api.py         # API配置测试工具
+- test_ai_answer.py   # AI答题功能测试工具
+- monitor_api.py      # API调用监控工具
+- check_login.py      # 查看登录状态工具
+- clear_login.py      # 清除登录信息工具
+- start_cli.sh        # 快速启动脚本（macOS/Linux）
+
+### 配置文件（1个）
+- requirements-cli.txt  # 依赖列表
+
+## 核心模块目录
+- bilibili-AIHardcore/  # 核心功能模块
+  ├── client/           # B站API客户端
+  ├── config/           # 配置管理
+  ├── scripts/          # 登录和答题脚本
+  └── tools/            # 工具模块（LLM、日志等）
+
+## 总计
+- 文档: 3个
+- 程序: 7个
+- 配置: 1个
+- 总计: 11个文件

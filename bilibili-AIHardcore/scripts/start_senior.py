@@ -31,24 +31,34 @@ class QuizSession:
                 
                 # 显示题目信息
                 self.display_question()
+
                 # 根据用户选择初始化对应的LLM模型
                 # 使用类中缓存的当前模型选择，这样可以随时更新
+                logger.info("=" * 50)
+                logger.info("正在调用AI模型进行答题...")
                 if self.current_model == '1':
+                    logger.info("使用模型: DeepSeek")
                     llm = DeepSeekAPI()
                 elif self.current_model == '2':
+                    logger.info("使用模型: Gemini")
                     llm = GeminiAPI()
                 elif self.current_model == '3':
+                    logger.info("使用模型: Custom")
                     llm = CustomAPI()
                 else:
+                    logger.info("使用模型: DeepSeek (默认)")
                     llm = DeepSeekAPI()
-                
+
                 # 检查是否停止
                 if self.stopped:
                     logger.info("答题已停止")
                     return
-                    
+
+                logger.info("正在向AI发送问题...")
                 answer = llm.ask(self.get_question_prompt())
-                logger.info('AI给出的答案:{}'.format(answer))
+                logger.info("=" * 50)
+                logger.info('✓ AI给出的答案: {}'.format(answer))
+                logger.info("=" * 50)
                 
                 # 检查是否停止
                 if self.stopped:
