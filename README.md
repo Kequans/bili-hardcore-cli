@@ -199,7 +199,7 @@ bilibili-AIHardcore/
 
 ## 技术栈
 
-- **Python 3.8+**
+- **Python 3.10+**
 - **DeepSeek API** - AI模型
 - **requests** - HTTP请求
 - **qrcode** - 二维码生成
