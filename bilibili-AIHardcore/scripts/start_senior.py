@@ -5,6 +5,9 @@ from tools.LLM.deepseek import DeepSeekAPI
 from tools.LLM.custom import CustomAPI
 from config.config import model_choice
 from time import sleep
+import os
+import requests
+from tools.request_b import session, headers as bili_headers
 
 class QuizSession:
     def __init__(self):
@@ -152,7 +155,7 @@ class QuizSession:
                 logger.info(f"ID: {cat.get('id')} - {cat.get('name')}")
             logger.info("tips: 输入多个分类ID请用 *英文逗号* 隔开,例如:1,2,3")
             ids = input('请输入分类ID: ')
-            
+
             # 检查是否停止
             if self.stopped:
                 logger.info("答题已停止")
@@ -160,9 +163,79 @@ class QuizSession:
                 
             logger.info("获取验证码...")
             captcha_res = captcha_get()
-            logger.info("请打开链接查看验证码内容:{}".format(captcha_res.get('url')))
             if not captcha_res:
                 return False
+
+            captcha_url = captcha_res.get('url')
+            captcha_token = captcha_res.get('token')
+
+            # 尝试下载验证码图片到本地
+            try:
+                logger.info("正在下载验证码图片...")
+
+                # 使用与B站API相同的session和headers
+                request_headers = bili_headers.copy()
+                request_headers.update({
+                    'Referer': 'https://www.bilibili.com/',
+                    'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+                })
+
+                response = session.get(captcha_url, headers=request_headers, timeout=10)
+
+                # 检查是否是图片
+                content_type = response.headers.get('Content-Type', '')
+                if response.status_code == 200 and 'image' in content_type:
+                    # 保存到临时文件
+                    captcha_file = os.path.join(os.getcwd(), 'captcha.jpg')
+                    with open(captcha_file, 'wb') as f:
+                        f.write(response.content)
+                    logger.info("=" * 50)
+                    logger.info(f"✓ 验证码图片已保存到: {captcha_file}")
+                    logger.info("=" * 50)
+
+                    # 尝试自动打开图片
+                    try:
+                        import platform
+                        system = platform.system()
+                        if system == 'Darwin':  # macOS
+                            os.system(f'open "{captcha_file}"')
+                            logger.info("✓ 已自动打开验证码图片")
+                        elif system == 'Windows':
+                            os.system(f'start "" "{captcha_file}"')
+                            logger.info("✓ 已自动打开验证码图片")
+                        elif system == 'Linux':
+                            os.system(f'xdg-open "{captcha_file}"')
+                            logger.info("✓ 已自动打开验证码图片")
+                        else:
+                            logger.info(f"请手动打开图片: {captcha_file}")
+                    except Exception as e:
+                        logger.info(f"无法自动打开图片，请手动打开: {captcha_file}")
+
+                    logger.info("=" * 50)
+                else:
+                    # 如果不是图片，显示错误信息
+                    logger.warning(f"无法直接获取验证码图片 (状态码: {response.status_code})")
+                    logger.warning("=" * 50)
+                    logger.warning("⚠️  验证码获取失败")
+                    logger.warning("可能的原因:")
+                    logger.warning("1. B站API需要特殊的认证")
+                    logger.warning("2. 验证码URL已过期")
+                    logger.warning("3. 网络问题")
+                    logger.warning("=" * 50)
+                    logger.info("备用方案: 请在浏览器中打开以下链接")
+                    logger.info("注意: 打开后不要刷新页面！")
+                    logger.info("=" * 50)
+                    logger.info(captcha_url)
+                    logger.info("=" * 50)
+
+            except Exception as e:
+                logger.warning(f"下载验证码图片出错: {e}")
+                logger.info("=" * 50)
+                logger.info("请在浏览器中打开以下链接查看验证码:")
+                logger.info("注意: 打开后不要刷新页面！")
+                logger.info("=" * 50)
+                logger.info(captcha_url)
+                logger.info("=" * 50)
                 
             # 检查是否停止
             if self.stopped:
@@ -171,8 +244,15 @@ class QuizSession:
                 
             captcha = input('请输入验证码: ')
 
-            if captcha_submit(code=captcha, captcha_token=captcha_res.get('token'), ids=ids):
+            if captcha_submit(code=captcha, captcha_token=captcha_token, ids=ids):
                 logger.info("验证通过✅")
+                # 删除临时验证码文件
+                try:
+                    captcha_file = os.path.join(os.getcwd(), 'captcha.jpg')
+                    if os.path.exists(captcha_file):
+                        os.remove(captcha_file)
+                except:
+                    pass
                 return self.get_question()
             else:
                 logger.error("验证失败")

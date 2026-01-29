@@ -23,21 +23,15 @@ pip install -r requirements-cli.txt
    ```
 5. 保存文件
 
-### 第三步：测试配置
+### 第三步：运行程序
 
 ```bash
-python test_api.py
-```
-
-看到 `✓ 配置测试通过！` 就可以继续了。
-
-### 第四步：运行程序
-
-```bash
+./start_cli.sh
+# 或
 python cli_main.py
 ```
 
-### 第五步：登录和答题
+### 第四步：登录和答题
 
 1. **扫码登录**
    - 程序会显示二维码
@@ -46,8 +40,10 @@ python cli_main.py
 
 2. **输入分类和验证码**
    - 程序会显示可用的答题分类
-   - 输入分类ID（推荐选择历史分区）
-   - 打开验证码链接，输入验证码
+   - 输入分类ID（推荐选择历史分区，例如：1 或 1,2,3）
+   - 程序会自动下载验证码图片并尝试打开
+   - 如果无法自动打开，手动打开当前目录下的 `captcha.jpg`
+   - 输入验证码（区分大小写）
 
 3. **自动答题**
    - 验证通过后，程序会自动开始答题
@@ -80,36 +76,24 @@ AI给出的答案:3
 
 ## 常见问题快速解决
 
+### 验证码问题
+- 程序会自动下载验证码图片到 `captcha.jpg`
+- 如果无法自动打开，手动打开该文件
+- 输入验证码时注意区分大小写
+- 不要在浏览器中打开验证码链接（会刷新验证码）
+
 ### 切换账号
 ```bash
-# 方法1：使用主程序
-python cli_main.py
+./start_cli.sh
 # 选择 n 清除旧登录信息，然后扫码登录新账号
-
-# 方法2：先清除再登录
-python clear_login.py  # 清除旧登录信息
-python cli_main.py     # 登录新账号
-```
-
-### 查看登录状态
-```bash
-python check_login.py
-```
-
-### API配置错误
-```bash
-# 重新测试API配置
-python test_api.py
 ```
 
 ### 登录失败
 ```bash
 # 删除缓存的登录信息
-python clear_login.py
-# 或手动删除
 rm -rf ~/.bili-hardcore/auth.json
 # 重新运行程序
-python cli_main.py
+./start_cli.sh
 ```
 
 ### 二维码显示异常
@@ -143,15 +127,14 @@ DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-V2.5"
 | 文件 | 说明 |
 |------|------|
 | `cli_main.py` | 主程序（需要配置API密钥） |
-| `test_api.py` | API配置测试工具 |
 | `start_cli.sh` | 快速启动脚本（macOS/Linux） |
 | `requirements-cli.txt` | 命令行版本依赖 |
-| `CLI_README.md` | 详细使用文档 |
+| `README.md` | 详细使用文档 |
 | `QUICKSTART.md` | 本文件 |
 
 ## 获取帮助
 
 如果遇到问题：
-1. 查看 `CLI_README.md` 详细文档
-2. 运行 `python test_api.py` 测试配置
-3. 检查 `~/.bili-hardcore/` 目录下的日志文件
+1. 查看 `README.md` 详细文档
+2. 检查 API 密钥配置是否正确
+3. 确认网络连接正常

@@ -10,14 +10,14 @@ B站答题助手命令行版本
 import sys
 import os
 
-# 添加bilibili-AIHardcore目录到模块搜索路径
+# 添加bilibili-AIHardcore目录到模xs块搜索路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(current_dir, 'bilibili-AIHardcore'))
 
 # ==================== 配置区域 ====================
 # DeepSeek API配置
 # 获取API密钥: https://platform.deepseek.com/api_keys
-DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # 请替换为你的实际API Key
+DEEPSEEK_API_KEY = "sk-xxxxxxxxxxxxxxxxxxxxx"  # 请替换为你的实际API Key
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEEPSEEK_MODEL = "deepseek-chat"
 
